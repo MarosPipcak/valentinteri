@@ -1,65 +1,119 @@
-import Image from "next/image";
+'use client';
+
+import { useRef, useState } from 'react';
 
 export default function Home() {
+  const [yesClicked, setYesClicked] = useState(false);
+  const [noMoved, setNoMoved] = useState(false);
+  const [noClicked, setNoClicked] = useState(false);
+  const [noPosition, setNoPosition] = useState({ x: 0, y: 0 });
+  const cardRef = useRef<HTMLDivElement | null>(null);
+  const noButtonRef = useRef<HTMLButtonElement | null>(null);
+  const padding = 16;
+
+  const handleNoHover = () => {
+    if (!noClicked) return;
+
+    const card = cardRef.current;
+    const button = noButtonRef.current;
+    if (!button || !card) return;
+
+    const cardWidth = card.clientWidth;
+    const cardHeight = card.clientHeight;
+    const buttonW = button.offsetWidth || 100;
+    const buttonH = button.offsetHeight || 44;
+    const maxX = Math.max(padding, cardWidth - buttonW - padding);
+    const maxY = Math.max(padding, cardHeight - buttonH - padding);
+
+    const nextX = padding + Math.random() * (maxX - padding);
+    const nextY = padding + Math.random() * (maxY - padding);
+
+    if (!noMoved) {
+      const currentX = Math.min(maxX, Math.max(padding, button.offsetLeft));
+      const currentY = Math.min(maxY, Math.max(padding, button.offsetTop));
+      setNoPosition({ x: currentX, y: currentY });
+      setNoMoved(true);
+
+      requestAnimationFrame(() => {
+        setNoPosition({ x: nextX, y: nextY });
+      });
+      return;
+    }
+
+    setNoPosition({ x: nextX, y: nextY });
+  };
+
+  const handleNoClick = () => {
+    setNoClicked(true);
+  };
+
+  const handleYesClick = () => {
+    setYesClicked(true);
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="relative h-screen bg-gradient-to-br from-purple-500 via-pink-500 to-red-400 overflow-hidden">
+      <div className="absolute top-10 left-10 text-6xl animate-bounce" style={{ animationDelay: '0s' }}>💜</div>
+      <div className="absolute top-32 right-20 text-5xl animate-bounce" style={{ animationDelay: '0.2s' }}>💕</div>
+      <div className="absolute bottom-32 left-20 text-5xl animate-bounce" style={{ animationDelay: '0.4s' }}>✨</div>
+      <div className="absolute bottom-20 right-10 text-6xl animate-bounce" style={{ animationDelay: '0.6s' }}>💖</div>
+
+      <div className="flex justify-center items-center h-screen p-4">
+        <div
+          ref={cardRef}
+          className={`relative bg-white rounded-3xl shadow-2xl p-24 max-w-md w-full transform transition-all duration-500 ${yesClicked ? 'scale-105' : 'hover:scale-105'}`}
+        >
+
+          <div className="flex justify-center gap-2 mb-6 text-3xl">
+            <span className="animate-pulse">💗</span>
+            <span className="animate-pulse" style={{ animationDelay: '0.2s' }}>💕</span>
+            <span className="animate-pulse" style={{ animationDelay: '0.4s' }}>💖</span>
+          </div>
+
+
+          <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent text-center mb-4 animate-in fade-in duration-1000">
+            Moja milovaná Tereska
+          </div>
+
+          <div className="text-center mb-8">
+            <p className="text-lg md:text-xl bg-gradient-to-r from-pink-600 to-red-500 bg-clip-text text-transparent font-semibold">
+              Budeš mojou Valentínkou?
+            </p>
+          </div>
+          {yesClicked ? (
+            <div className="text-center py-8">
+              <div className="text-5xl mb-4 animate-bounce">🎉</div>
+              <img src="https://i.pinimg.com/originals/6a/01/89/6a01896c58e0585369d0d4fd0e41fb6a.gif" alt="Heart Animation" className="mx-auto mb-4" />
+              <p className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+                Ešte že! Milujem ťa, Teresička a teším sa na La Haciendu! 
+              </p>
+            </div>
+          ) : (
+            <div className="flex gap-4 justify-center items-center">
+              <button
+                onClick={handleYesClick}
+                className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-110 shadow-lg text-lg"
+              >
+                Áno ❤️
+              </button>
+              <button
+                ref={noButtonRef}
+                onMouseEnter={handleNoHover}
+                onClick={handleNoClick}
+                style={noMoved ? {
+                  position: 'absolute',
+                  left: `${noPosition.x}px`,
+                  top: `${noPosition.y}px`,
+                  zIndex: 50,
+                } : undefined}
+                className={`${noMoved ? '' : 'flex-1'} bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-3 px-6 rounded-xl transition-colors duration-200 shadow-lg text-lg`}
+              >
+                {noClicked ? 'Prečo to vôbec skúšaš?' : 'Nie'}
+              </button>
+            </div>
+          )}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+      </div>
     </div>
   );
 }
