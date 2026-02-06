@@ -61,7 +61,7 @@ export default function Home() {
       <div className="flex justify-center items-center h-screen p-4">
         <div
           ref={cardRef}
-          className={`relative bg-white rounded-3xl shadow-2xl p-24 max-w-md w-full transform transition-all duration-500 ${yesClicked ? 'scale-105' : 'hover:scale-105'}`}
+          className={`relative bg-white rounded-3xl shadow-2xl p-24 max-w-2xl w-full transform transition-all duration-500 ${yesClicked ? 'scale-105' : 'hover:scale-105'}`}
         >
 
           <div className="flex justify-center gap-2 mb-6 text-3xl">
@@ -71,15 +71,17 @@ export default function Home() {
           </div>
 
 
-          <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent text-center mb-4 animate-in fade-in duration-1000">
+          <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent text-center mb-4 animate-in fade-in duration-1000 whitespace-nowrap">
             Moja milovaná Tereska
           </div>
 
-          <div className="text-center mb-8">
-            <p className="text-lg md:text-xl bg-gradient-to-r from-pink-600 to-red-500 bg-clip-text text-transparent font-semibold">
-              Budeš mojou Valentínkou?
-            </p>
-          </div>
+          {!yesClicked && (
+            <div className="text-center mb-8">
+              <p className="text-lg md:text-xl bg-gradient-to-r from-pink-600 to-red-500 bg-clip-text text-transparent font-semibold">
+                Budeš mojou Valentínkou?
+              </p>
+            </div>
+          )}
           {yesClicked ? (
             <div className="text-center py-8">
               <div className="text-5xl mb-4 animate-bounce">🎉</div>
