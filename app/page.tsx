@@ -1,15 +1,26 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export default function Home() {
   const [yesClicked, setYesClicked] = useState(false);
   const [noMoved, setNoMoved] = useState(false);
   const [noClicked, setNoClicked] = useState(false);
+  const [noDodges, setNoDodges] = useState(0);
   const [noPosition, setNoPosition] = useState({ x: 0, y: 0 });
+  const [isMobile, setIsMobile] = useState(false);
   const cardRef = useRef<HTMLDivElement | null>(null);
   const noButtonRef = useRef<HTMLButtonElement | null>(null);
   const padding = 16;
+
+  useEffect(() => {
+    const updateIsMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    updateIsMobile();
+    window.addEventListener('resize', updateIsMobile);
+    return () => window.removeEventListener('resize', updateIsMobile);
+  }, []);
 
   const handleNoHover = () => {
     if (!noClicked) return;
@@ -37,10 +48,16 @@ export default function Home() {
       requestAnimationFrame(() => {
         setNoPosition({ x: nextX, y: nextY });
       });
+      if (isMobile) {
+        setNoDodges((count) => count + 1);
+      }
       return;
     }
 
     setNoPosition({ x: nextX, y: nextY });
+    if (isMobile) {
+      setNoDodges((count) => count + 1);
+    }
   };
 
   const handleNoClick = () => {
@@ -50,6 +67,9 @@ export default function Home() {
   const handleYesClick = () => {
     setYesClicked(true);
   };
+
+  const yesScale = isMobile ? Math.min(1.5, 1 + noDodges * 0.08) : 1;
+  const noScale = isMobile ? Math.max(0.55, 1 - noDodges * 0.08) : 1;
 
   return (
     <div className="relative h-screen bg-gradient-to-br from-purple-500 via-pink-500 to-red-400 overflow-hidden">
@@ -94,7 +114,8 @@ export default function Home() {
             <div className="flex gap-4 justify-center items-center">
               <button
                 onClick={handleYesClick}
-                className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-110 shadow-lg text-lg"
+                style={isMobile ? { transform: `scale(${yesScale})` } : undefined}
+                className={`flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 shadow-lg text-lg ${isMobile ? '' : 'transform hover:scale-110'}`}
               >
                 Áno ❤️
               </button>
@@ -107,7 +128,8 @@ export default function Home() {
                   left: `${noPosition.x}px`,
                   top: `${noPosition.y}px`,
                   zIndex: 50,
-                } : undefined}
+                  transform: `scale(${noScale})`,
+                } : isMobile ? { transform: `scale(${noScale})` } : undefined}
                 className={`${noMoved ? '' : 'flex-1'} bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-3 px-6 rounded-xl transition-colors duration-200 shadow-lg text-lg`}
               >
                 {noClicked ? 'Prečo to vôbec skúšaš?' : 'Nie'}
